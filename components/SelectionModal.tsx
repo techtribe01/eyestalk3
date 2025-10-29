@@ -1,53 +1,54 @@
 import React, { useEffect } from 'react';
-import { CheckCircle2, Loader } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import type { MenuItemData, Language } from '../types';
 
 interface SelectionModalProps {
   item: MenuItemData;
   language: Language;
   onClose: () => void;
-  isSending: boolean;
 }
 
-const SelectionModal: React.FC<SelectionModalProps> = ({ item, language, onClose, isSending }) => {
+const SelectionModal: React.FC<SelectionModalProps> = ({ item, language, onClose }) => {
   useEffect(() => {
-    if (isSending) return; // Don't start the auto-close timer while sending
-
     const timer = setTimeout(() => {
       onClose();
     }, 2500); // Auto-close after 2.5 seconds
 
     return () => clearTimeout(timer);
-  }, [isSending, onClose]);
+  }, [onClose]);
 
   const Icon = item.icon;
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out" style={{'animation': 'fadeIn 0.3s ease-out'}}>
-        <div className="bg-light-card-bg dark:bg-dark-card-bg rounded-2xl p-8 flex flex-col items-center gap-4 text-center shadow-2xl max-w-sm w-full mx-4" style={{'animation': 'zoomIn 0.3s ease-out'}}>
-            {isSending ? (
-                <Loader className="w-16 h-16 text-accent-cyan animate-spin" />
-            ) : (
-                <CheckCircle2 className="w-16 h-16 text-accent-green" />
-            )}
-
-            <h2 className="text-3xl font-bold text-light-text dark:text-dark-text">
-                {item.name[language]} {isSending ? '' : 'Selected'}
-            </h2>
-            <p className="text-light-text-secondary dark:text-dark-text-secondary">
-                {isSending ? 'Sending request to caregiver...' : 'Request has been sent to the caregiver.'}
-            </p>
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100] animate-fade-in">
+      <div className="bg-light-card-bg dark:bg-dark-card-bg rounded-3xl p-8 md:p-12 shadow-2xl w-full max-w-sm mx-4 flex flex-col items-center gap-4 animate-scale-in">
+        <div className="relative">
+            <Icon className="w-24 h-24 text-accent-cyan" />
+            <CheckCircle2 className="absolute -bottom-2 -right-2 w-10 h-10 text-accent-green bg-light-card-bg dark:bg-dark-card-bg rounded-full" />
         </div>
-        <style>{`
-          @keyframes fadeIn {
+        <h2 className="text-3xl md:text-4xl font-bold text-center text-light-text dark:text-dark-text">
+          {item.name[language]}
+        </h2>
+        <p className="text-lg text-light-text-secondary dark:text-dark-text-secondary">
+          Request Sent
+        </p>
+      </div>
+      <style>{`
+          @keyframes fade-in {
             from { opacity: 0; }
             to { opacity: 1; }
           }
-          @keyframes zoomIn {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+          @keyframes scale-in {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
           }
-        `}</style>
+          .animate-fade-in {
+            animation: fade-in 0.3s ease-out forwards;
+          }
+          .animate-scale-in {
+            animation: scale-in 0.3s ease-out forwards;
+          }
+      `}</style>
     </div>
   );
 };

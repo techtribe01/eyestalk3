@@ -1,8 +1,7 @@
 import React from 'react';
-import { Eye, Sun, Moon, Settings } from 'lucide-react';
+import { Eye, Sun, Moon, Volume2, VolumeX } from 'lucide-react';
 import { LANGUAGES } from '../constants';
-import type { Theme, Language, ArduinoStatus, CallStatus } from '../types';
-import CallStatusToast from './CallStatusToast';
+import type { Theme, Language, ArduinoStatus } from '../types';
 
 interface HeaderProps {
   theme: Theme;
@@ -11,9 +10,8 @@ interface HeaderProps {
   setLanguage: (language: Language) => void;
   arduinoStatus: ArduinoStatus;
   setArduinoStatus: (status: ArduinoStatus) => void;
-  onOpenConfig: () => void;
-  callStatus: CallStatus;
-  lastCalledNumber: string;
+  isTtsEnabled: boolean;
+  setIsTtsEnabled: (enabled: boolean) => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -23,9 +21,8 @@ const Header: React.FC<HeaderProps> = ({
   setLanguage,
   arduinoStatus,
   setArduinoStatus,
-  onOpenConfig,
-  callStatus,
-  lastCalledNumber,
+  isTtsEnabled,
+  setIsTtsEnabled,
 }) => {
   return (
     <header className="w-full p-4 flex items-center justify-between bg-light-card-bg/80 dark:bg-dark-card-bg/80 backdrop-blur-sm sticky top-0 z-50 border-b border-light-card-border dark:border-dark-card-border">
@@ -35,14 +32,12 @@ const Header: React.FC<HeaderProps> = ({
       </div>
       
       <div className="flex items-center gap-4 md:gap-6">
-        <CallStatusToast status={callStatus} phoneNumber={lastCalledNumber} />
-
         <button
-          onClick={onOpenConfig}
+          onClick={() => setIsTtsEnabled(!isTtsEnabled)}
           className="p-2 rounded-full hover:bg-light-bg dark:hover:bg-dark-bg"
-          aria-label="Open settings"
+          aria-label="Toggle text to speech"
         >
-          <Settings className="w-6 h-6 text-dark-text-secondary" />
+          {isTtsEnabled ? <Volume2 className="w-6 h-6 text-accent-green" /> : <VolumeX className="w-6 h-6 text-dark-text-secondary" />}
         </button>
 
         <button
