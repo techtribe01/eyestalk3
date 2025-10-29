@@ -1,0 +1,5 @@
+{
+  "name": "EyesTalk - Eye-Blink Assistive Communication System",
+  "description": "An assistive communication web application for paralyzed users, designed to be controlled by eye-blinks via an Arduino interface that simulates keyboard inputs. It features a modern, accessible UI with theme and language customization.",
+  "requestFramePermissions": []
+}

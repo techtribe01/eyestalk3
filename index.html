@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EyesTalk - Assistive Communication</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'light-bg': '#F5F5F5',
+              'light-text': '#000000',
+              'light-text-secondary': '#666666',
+              'light-card-bg': '#FFFFFF',
+              'light-card-border': '#EEEEEE',
+              'dark-bg': '#0F1A2E',
+              'dark-text': '#FFFFFF',
+              'dark-text-secondary': '#A0B0C8',
+              'dark-card-bg': '#1A2A3E',
+              'dark-card-border': '#2A3A4E',
+              'accent-cyan': '#00D9FF',
+              'accent-green': '#22C55E',
+              'accent-pink': '#EC4899',
+              'accent-purple': '#A78BFA',
+              'accent-orange': '#FB923C',
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+          },
+        },
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <script type="importmap">
+{
+  "imports": {
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.548.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0"
+  }
+}
+</script>
+</head>
+  <body class="bg-light-bg dark:bg-dark-bg antialiased">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
