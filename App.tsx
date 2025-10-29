@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
-import { MENU_ITEMS } from './constants';
+import { MENU_ITEMS, SUCCESS_MESSAGE_SUBTITLE } from './constants';
 import type { Theme, Language, AppMode, ArduinoStatus, MenuItemData } from './types';
 import Header from './components/Header';
 import MainMenu from './components/MainMenu';
@@ -84,25 +85,21 @@ const App: React.FC = () => {
     setSelectedIndex(prevIndex => (prevIndex + 1) % MENU_ITEMS.length);
   }, [selectedItem]);
 
-  const handleSelect = useCallback(async () => {
+  const handleSelect = useCallback(() => {
     if (selectedItem) return;
-    const item = MENU_ITEMS[selectedIndex];
-    console.log(`[${new Date().toISOString()}] Selected: ${item.name[language]}`);
 
-    const sentText: Record<Language, string> = {
-      english: "Request Sent",
-      hindi: "अनुरोध भेजा गया",
-      tamil: "கோரிக்கை அனுப்பப்பட்டது",
-      telugu: "అభ్యర్థన పంపబడింది"
-    };
-    speak(`${item.name[language]}. ${sentText[language]}`, language, isTtsEnabled);
+    const item = MENU_ITEMS[selectedIndex];
+    
+    console.log(`[${new Date().toISOString()}] Selected: ${item.name[language]}`);
+    
+    speak(`${item.name[language]}. ${SUCCESS_MESSAGE_SUBTITLE[language]}`, language, isTtsEnabled);
 
     if (item.id === 'entertainment') {
       setAppMode('entertainment');
     } else {
        setSelectedItem(item);
     }
-  }, [selectedIndex, language, selectedItem, isTtsEnabled]);
+  }, [selectedIndex, language, isTtsEnabled, selectedItem]);
   
   const handleCloseSelectionModal = () => {
     setSelectedItem(null);
@@ -111,7 +108,8 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (selectedItem) return; // Block input when modal is open
+      // Normal navigation logic
+      if (selectedItem) return;
       if (appMode !== 'navigation') return;
 
       if (event.code === 'ArrowDown') {
@@ -127,7 +125,7 @@ const App: React.FC = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [appMode, handleNavigateNext, handleSelect, selectedItem]);
+  }, [appMode, selectedItem, handleNavigateNext, handleSelect]);
 
   const handleExitEntertainment = () => {
     setAppMode('navigation');
@@ -163,6 +161,7 @@ const App: React.FC = () => {
           item={selectedItem}
           language={language}
           onClose={handleCloseSelectionModal}
+          successMessage={SUCCESS_MESSAGE_SUBTITLE[language]}
         />
       )}
     </div>

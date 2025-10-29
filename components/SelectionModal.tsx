@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import type { MenuItemData, Language } from '../types';
@@ -6,9 +7,10 @@ interface SelectionModalProps {
   item: MenuItemData;
   language: Language;
   onClose: () => void;
+  successMessage: string;
 }
 
-const SelectionModal: React.FC<SelectionModalProps> = ({ item, language, onClose }) => {
+const SelectionModal: React.FC<SelectionModalProps> = ({ item, language, onClose, successMessage }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
@@ -30,7 +32,7 @@ const SelectionModal: React.FC<SelectionModalProps> = ({ item, language, onClose
           {item.name[language]}
         </h2>
         <p className="text-lg text-light-text-secondary dark:text-dark-text-secondary">
-          Request Sent
+          {successMessage}
         </p>
       </div>
       <style>{`

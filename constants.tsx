@@ -57,3 +57,10 @@ export const ACCENT_COLORS = [
     '#FB923C', // orange
     '#EC4899', // pink
 ];
+
+export const SUCCESS_MESSAGE_SUBTITLE: Record<Language, string> = {
+  english: "Request Sent Successfully",
+  hindi: "अनुरोध सफलतापूर्वक भेजा गया",
+  tamil: "கோரிக்கை வெற்றிகரமாக அனுப்பப்பட்டது",
+  telugu: "అభ్యర్థన విజయవంతంగా పంపబడింది",
+};
