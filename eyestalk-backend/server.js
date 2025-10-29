@@ -34,7 +34,7 @@ app.post('/send-telegram', async (req, res) => {
     return res.status(400).json({ success: false, error: 'Message is required' });
   }
 
-  const url = `https://api.telegram.org/bot${8203231943:AAH30uPbdMhV0gd1yQvbLv-796mcD7Hz1ZQ}/sendMessage`;
+  const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
   const payload = {
     chat_id: TELEGRAM_CHAT_ID,
     text: message,
