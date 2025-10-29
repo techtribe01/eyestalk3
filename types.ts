@@ -5,6 +5,9 @@ export type Language = 'english' | 'hindi' | 'tamil' | 'telugu';
 export type AppMode = 'navigation' | 'entertainment';
 export type ArduinoStatus = 'connected' | 'disconnected';
 
+// FIX: Add NotificationStatus type.
+export type NotificationStatus = 'idle' | 'sending' | 'success' | 'error';
+
 export interface MenuItemData {
   id: string;
   name: Record<Language, string>;

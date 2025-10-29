@@ -1,13 +1,13 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { MENU_ITEMS, SUCCESS_MESSAGE_SUBTITLE } from './constants';
-import type { Theme, Language, AppMode, ArduinoStatus, MenuItemData } from './types';
+import type { Theme, Language, AppMode, ArduinoStatus, MenuItemData, NotificationStatus } from './types';
 import Header from './components/Header';
 import MainMenu from './components/MainMenu';
 import EntertainmentMode from './components/EntertainmentMode';
 import HowItWorks from './components/HowItWorks';
 import InitializingScreen from './components/InitializingScreen';
-import SelectionModal from './components/SelectionModal';
+import ConfirmationModal from './components/ConfirmationModal';
+import NotificationStatusToast from './components/WhatsAppStatusToast';
 
 // --- Text-to-Speech (TTS) Utility ---
 const languageToCode: Record<Language, string> = {
@@ -40,10 +40,11 @@ const App: React.FC = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [appMode, setAppMode] = useState<AppMode>('navigation');
   const [isInitializing, setIsInitializing] = useState(true);
-  const [selectedItem, setSelectedItem] = useState<MenuItemData | null>(null);
+  const [itemToConfirm, setItemToConfirm] = useState<MenuItemData | null>(null);
+  const [highlightedConfirmation, setHighlightedConfirmation] = useState<'yes' | 'no'>('yes');
+  const [notificationStatus, setNotificationStatus] = useState<NotificationStatus>('idle');
   const [isTtsEnabled, setIsTtsEnabled] = useState<boolean>(() => {
     const saved = localStorage.getItem('ttsEnabled');
-    // Default to true for better accessibility
     return saved !== null ? JSON.parse(saved) : true;
   });
 
@@ -72,52 +73,92 @@ const App: React.FC = () => {
   
   // TTS for menu navigation
   useEffect(() => {
-    if (isInitializing || selectedItem || appMode !== 'navigation') {
+    if (isInitializing || itemToConfirm || appMode !== 'navigation') {
       window.speechSynthesis?.cancel();
       return;
     }
     const currentItem = MENU_ITEMS[selectedIndex];
     speak(currentItem.name[language], language, isTtsEnabled);
-  }, [selectedIndex, language, isTtsEnabled, isInitializing, selectedItem, appMode]);
+  }, [selectedIndex, language, isTtsEnabled, isInitializing, itemToConfirm, appMode]);
 
   const handleNavigateNext = useCallback(() => {
-    if (selectedItem) return;
+    if (itemToConfirm) return;
     setSelectedIndex(prevIndex => (prevIndex + 1) % MENU_ITEMS.length);
-  }, [selectedItem]);
+  }, [itemToConfirm]);
 
   const handleSelect = useCallback(() => {
-    if (selectedItem) return;
-
+    if (itemToConfirm) return;
     const item = MENU_ITEMS[selectedIndex];
     
-    console.log(`[${new Date().toISOString()}] Selected: ${item.name[language]}`);
-    
-    speak(`${item.name[language]}. ${SUCCESS_MESSAGE_SUBTITLE[language]}`, language, isTtsEnabled);
-
     if (item.id === 'entertainment') {
       setAppMode('entertainment');
     } else {
-       setSelectedItem(item);
+      setItemToConfirm(item);
+      setHighlightedConfirmation('yes');
+      speak(`${item.name[language]}. Confirm selection?`, language, isTtsEnabled);
     }
-  }, [selectedIndex, language, isTtsEnabled, selectedItem]);
+  }, [selectedIndex, language, isTtsEnabled, itemToConfirm]);
   
-  const handleCloseSelectionModal = () => {
-    setSelectedItem(null);
-    setSelectedIndex(0);
-  };
+  const handleCancel = useCallback(() => {
+    setItemToConfirm(null);
+  }, []);
+
+  const handleConfirm = useCallback(async () => {
+    if (!itemToConfirm) return;
+
+    const item = itemToConfirm;
+    setItemToConfirm(null);
+    
+    speak(`${item.name[language]}. ${SUCCESS_MESSAGE_SUBTITLE[language]}`, language, isTtsEnabled);
+    
+    setNotificationStatus('sending');
+    
+    try {
+      const response = await fetch('http://localhost:3001/send-telegram', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: `EyesTalk Alert: User requested "${item.name.english}".` }),
+      });
+      if (!response.ok) throw new Error('Network response was not ok');
+      
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error || 'API returned an error');
+
+      setNotificationStatus('success');
+    } catch (error) {
+      console.error("Failed to send Telegram message:", error);
+      setNotificationStatus('error');
+    } finally {
+      setTimeout(() => {
+        setNotificationStatus('idle');
+      }, 2500);
+    }
+  }, [itemToConfirm, language, isTtsEnabled]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Normal navigation logic
-      if (selectedItem) return;
-      if (appMode !== 'navigation') return;
+      if (notificationStatus !== 'idle') return;
 
-      if (event.code === 'ArrowDown') {
-        event.preventDefault();
-        handleNavigateNext();
-      } else if (event.code === 'Space') {
-        event.preventDefault();
-        handleSelect();
+      if (itemToConfirm) {
+        if (event.code === 'ArrowDown') {
+          event.preventDefault();
+          setHighlightedConfirmation(prev => (prev === 'yes' ? 'no' : 'yes'));
+        } else if (event.code === 'Space') {
+          event.preventDefault();
+          if (highlightedConfirmation === 'yes') {
+            handleConfirm();
+          } else {
+            handleCancel();
+          }
+        }
+      } else if (appMode === 'navigation') {
+        if (event.code === 'ArrowDown') {
+          event.preventDefault();
+          handleNavigateNext();
+        } else if (event.code === 'Space') {
+          event.preventDefault();
+          handleSelect();
+        }
       }
     };
 
@@ -125,7 +166,7 @@ const App: React.FC = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [appMode, selectedItem, handleNavigateNext, handleSelect]);
+  }, [appMode, itemToConfirm, notificationStatus, highlightedConfirmation, handleNavigateNext, handleSelect, handleConfirm, handleCancel]);
 
   const handleExitEntertainment = () => {
     setAppMode('navigation');
@@ -156,14 +197,19 @@ const App: React.FC = () => {
         )}
       </main>
       {appMode === 'navigation' && <HowItWorks />}
-      {selectedItem && (
-        <SelectionModal
-          item={selectedItem}
+      {itemToConfirm && (
+        <ConfirmationModal
+          item={itemToConfirm}
           language={language}
-          onClose={handleCloseSelectionModal}
-          successMessage={SUCCESS_MESSAGE_SUBTITLE[language]}
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+          highlightedOption={highlightedConfirmation}
         />
       )}
+      <NotificationStatusToast 
+        status={notificationStatus}
+        language={language}
+      />
     </div>
   );
 };

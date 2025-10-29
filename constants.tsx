@@ -1,6 +1,7 @@
 
 import { UtensilsCrossed, Droplets, Phone, Accessibility, Wind, Tv2 } from 'lucide-react';
-import type { MenuItemData, LanguageOption, Language } from './types';
+// FIX: Import NotificationStatus type.
+import type { MenuItemData, LanguageOption, Language, NotificationStatus } from './types';
 
 export const MENU_ITEMS: MenuItemData[] = [
   {
@@ -63,4 +64,28 @@ export const SUCCESS_MESSAGE_SUBTITLE: Record<Language, string> = {
   hindi: "अनुरोध सफलतापूर्वक भेजा गया",
   tamil: "கோரிக்கை வெற்றிகரமாக அனுப்பப்பட்டது",
   telugu: "అభ్యర్థన విజయవంతంగా పంపబడింది",
+};
+
+// Replace WHATSAPP_STATUS_MESSAGES with TELEGRAM_STATUS_MESSAGES
+export const TELEGRAM_STATUS_MESSAGES: Record<Language, Record<Exclude<NotificationStatus, 'idle'>, string>> = {
+  english: {
+    sending: '📱 Sending Telegram...',
+    success: '✓ Caregiver notified via Telegram',
+    error: '❌ Failed to notify caregiver.',
+  },
+  hindi: {
+    sending: '📱 टेलीग्राम भेजा जा रहा है...',
+    success: '✓ देखभाल करने वाले को टेलीग्राम के माध्यम से सूचित किया गया',
+    error: '❌ देखभाल करने वाले को सूचित करने में विफल।',
+  },
+  tamil: {
+    sending: '📱 டெலிகிராம் அனுப்பப்படுகிறது...',
+    success: '✓ பராமரிப்பாளருக்கு டெலிகிராம் மூலம் அறிவிக்கப்பட்டது',
+    error: '❌ பராமரிப்பாளருக்கு அறிவிக்கத் தவறிவிட்டது.',
+  },
+  telugu: {
+    sending: '📱 టెలిగ్రామ్ పంపుతోంది...',
+    success: '✓ సంరక్షకుడికి టెలిగ్రామ్ ద్వారా తెలియజేయబడింది',
+    error: '❌ సంరక్షకుడికి తెలియజేయడంలో విఫలమైంది.',
+  },
 };
