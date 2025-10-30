@@ -126,19 +126,26 @@ const App: React.FC = () => {
     setNotificationStatus('sending');
     
     try {
-      const response = await fetch('http://localhost:3001/send-telegram', {
+      const notificationMessage = `🚨 EyesTalk Alert: User requested "${item.name.english}"\n\nTime: ${new Date().toLocaleString()}\nDevice: EyesTalk Communication System\n\nPlease respond promptly to assist the user.`;
+      
+      const response = await fetch('http://localhost:3001/send-notification', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: `EyesTalk Alert: User requested "${item.name.english}".` }),
+        body: JSON.stringify({ 
+          message: notificationMessage,
+          methods: ['browser', 'telegram', 'email', 'whatsapp'] // Try all methods
+        }),
       });
+      
       if (!response.ok) throw new Error('Network response was not ok');
       
       const result = await response.json();
       if (!result.success) throw new Error(result.error || 'API returned an error');
 
+      console.log('📱 Notification sent via:', result.results?.map(r => r.method).join(', ') || 'multiple methods');
       setNotificationStatus('success');
     } catch (error) {
-      console.error("Failed to send Telegram message:", error);
+      console.error("Failed to send notification:", error);
       setNotificationStatus('error');
     } finally {
       setTimeout(() => {
