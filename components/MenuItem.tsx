@@ -6,6 +6,7 @@ interface MenuItemProps {
   language: Language;
   isHighlighted: boolean;
   accentColor: string;
+  onItemClick?: (item: MenuItemData) => void;
 }
 
 const MenuItem: React.FC<MenuItemProps> = ({ item, language, isHighlighted, accentColor }) => {
