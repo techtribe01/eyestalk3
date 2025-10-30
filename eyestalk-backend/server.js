@@ -1,27 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
-const fs = require('fs').promises;
-const path = require('path');
-const config = require('./config');
 
 const app = express();
 const port = 3001;
 
-// Load nodemailer only if email is enabled
-let nodemailer = null;
-if (config.email.enabled) {
-  try {
-    nodemailer = require('nodemailer');
-  } catch (error) {
-    console.log('⚠️  Nodemailer not available. Email notifications disabled.');
-    config.email.enabled = false;
-  }
-}
-
-// Create logs directory if it doesn't exist
-const LOGS_DIR = path.join(__dirname, 'notifications_log');
-// ---------------------
+// --- TELEGRAM CONFIGURATION ---
+const TELEGRAM_BOT_TOKEN = '8483266791:AAHrlKQxmWrBxgcHfAC4ZN_nK4l95bP_Sbg';
+const TELEGRAM_CHAT_ID = '287541730';
+// -----------------------------
 
 // More robust CORS setup to allow requests from any origin
 const corsOptions = {
