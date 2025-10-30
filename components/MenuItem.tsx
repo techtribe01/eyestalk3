@@ -18,7 +18,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, language, isHighlighted, acce
     rounded-3xl border-2 flex-shrink-0
     w-48 h-48 md:w-52 md:h-52
     transition-all duration-200 ease-in-out transform
-    hover:scale-105
+    hover:scale-105 cursor-pointer
     ${isHighlighted 
       ? `border-transparent ring-2` 
       : 'border-light-card-border dark:border-dark-card-border'}
