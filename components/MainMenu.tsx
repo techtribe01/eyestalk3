@@ -9,7 +9,7 @@ interface MainMenuProps {
   onItemClick?: (item: any) => void;
 }
 
-const MainMenu: React.FC<MainMenuProps> = ({ selectedIndex, language }) => {
+const MainMenu: React.FC<MainMenuProps> = ({ selectedIndex, language, onItemClick }) => {
   return (
     <div className="flex flex-row items-center justify-start md:justify-center gap-4 md:gap-6 p-4 w-full overflow-x-auto">
       {MENU_ITEMS.map((item, index) => (
