@@ -1,6 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
+const nodemailer = require('nodemailer');
+const fs = require('fs').promises;
+const path = require('path');
 
 const app = express();
 const port = 3001;
@@ -8,6 +11,23 @@ const port = 3001;
 // --- CONFIGURATION ---
 const TELEGRAM_BOT_TOKEN = '8483266791:AAHrlKQxmWrBxgcHfAC4ZN_nK4l95bP_Sbg';
 const TELEGRAM_CHAT_ID = '287541730';
+
+// Email Configuration (Gmail example - can be configured)
+const EMAIL_CONFIG = {
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER || 'your-email@gmail.com',
+    pass: process.env.EMAIL_PASS || 'your-app-password'
+  }
+};
+
+const NOTIFICATION_RECIPIENTS = {
+  email: process.env.CAREGIVER_EMAIL || 'caregiver@example.com',
+  phone: process.env.CAREGIVER_PHONE || '+1234567890'
+};
+
+// Create logs directory if it doesn't exist
+const LOGS_DIR = path.join(__dirname, 'notifications_log');
 // ---------------------
 
 // More robust CORS setup to allow requests from any origin
