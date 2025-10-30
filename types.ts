@@ -2,7 +2,6 @@ import type { ComponentType, CSSProperties } from 'react';
 
 export type Theme = 'light' | 'dark' | 'auto';
 export type Language = 'english' | 'hindi' | 'tamil' | 'telugu';
-export type AppMode = 'navigation' | 'entertainment';
 export type ArduinoStatus = 'connected' | 'disconnected';
 
 // FIX: Add NotificationStatus type.

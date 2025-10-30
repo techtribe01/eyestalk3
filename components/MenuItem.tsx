@@ -6,10 +6,9 @@ interface MenuItemProps {
   language: Language;
   isHighlighted: boolean;
   accentColor: string;
-  onItemClick?: (item: MenuItemData) => void;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ item, language, isHighlighted, accentColor, onItemClick }) => {
+const MenuItem: React.FC<MenuItemProps> = ({ item, language, isHighlighted, accentColor }) => {
   const Icon = item.icon;
 
   const cardClasses = `
@@ -18,22 +17,15 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, language, isHighlighted, acce
     rounded-3xl border-2 flex-shrink-0
     w-48 h-48 md:w-52 md:h-52
     transition-all duration-200 ease-in-out transform
-    hover:scale-105 cursor-pointer
+    hover:scale-105
     ${isHighlighted 
       ? `border-transparent ring-2` 
       : 'border-light-card-border dark:border-dark-card-border'}
   `;
 
-  const handleClick = () => {
-    if (onItemClick) {
-      onItemClick(item);
-    }
-  };
-
   return (
     <div
       className={cardClasses}
-      onClick={handleClick}
       style={isHighlighted ? {
         boxShadow: `0 0 20px ${accentColor}, 0 0 5px ${accentColor}`,
         borderColor: accentColor,

@@ -1,7 +1,10 @@
 
 import { UtensilsCrossed, Droplets, Phone, Accessibility, Wind, Tv2 } from 'lucide-react';
-// FIX: Import NotificationStatus type.
 import type { MenuItemData, LanguageOption, Language, NotificationStatus } from './types';
+
+// Telegram API Configuration
+export const TELEGRAM_BOT_TOKEN = '8483266791:AAHrlKQxmWrBxgcHfAC4ZN_nK4l95bP_Sbg';
+export const TELEGRAM_CHAT_ID = '-4846887565';
 
 export const MENU_ITEMS: MenuItemData[] = [
   {
@@ -49,8 +52,6 @@ export const LANGUAGES: LanguageOption[] = [
     { id: 'telugu', name: 'తెలుగు', flag: '🇮🇳' },
 ];
 
-export const YOUTUBE_SHORT_IDS = ['h-b8pZXMy-o', 'f49b1a0f9y8', 'jNQXAC9IVRw', 'M3-O2g-oM_k', 'dQw4w9WgXcQ', 'y6120QOlsfU'];
-
 export const ACCENT_COLORS = [
     '#00D9FF', // cyan
     '#22C55E', // green
@@ -69,22 +70,32 @@ export const SUCCESS_MESSAGE_SUBTITLE: Record<Language, string> = {
 export const TELEGRAM_STATUS_MESSAGES: Record<Language, Record<Exclude<NotificationStatus, 'idle'>, string>> = {
   english: {
     sending: '📱 Sending Telegram...',
-    success: '✅ Caregiver notified via Telegram',
+    success: '✓ Caregiver notified via Telegram',
     error: '❌ Failed to notify caregiver.',
   },
   hindi: {
     sending: '📱 टेलीग्राम भेजा जा रहा है...',
-    success: '✅ देखभाल करने वाले को टेलीग्राम के माध्यम से सूचित किया गया',
+    success: '✓ देखभाल करने वाले को टेलीग्राम के माध्यम से सूचित किया गया',
     error: '❌ देखभाल करने वाले को सूचित करने में विफल।',
   },
   tamil: {
     sending: '📱 டெலிகிராம் அனுப்பப்படுகிறது...',
-    success: '✅ பராமரிப்பாளருக்கு டெலிகிராம் மூலம் அறிவிக்கப்பட்டது',
+    success: '✓ பராமரிப்பாளருக்கு டெலிகிராம் மூலம் அறிவிக்கப்பட்டது',
     error: '❌ பராமரிப்பாளருக்கு அறிவிக்கத் தவறிவிட்டது.',
   },
   telugu: {
     sending: '📱 టెలిగ్రామ్ పంపుతోంది...',
-    success: '✅ సంరక్షకుడికి టెలిగ్రామ్ ద్వారా తెలియజేయబడింది',
+    success: '✓ సంరక్షకుడికి టెలిగ్రామ్ ద్వారా తెలియజేయబడింది',
     error: '❌ సంరక్షకుడికి తెలియజేయడంలో విఫలమైంది.',
   },
 };
+
+// FIX: Add YOUTUBE_SHORT_IDS to fix import error in EntertainmentMode.tsx
+export const YOUTUBE_SHORT_IDS: string[] = [
+  'yRZ3_W1v_pQ',
+  '_3-Q4-b8O-s',
+  '3JZ_D3p3-oE',
+  '5qap5aO4i9A',
+  'mPZkdNFkNps',
+  'D-4Oa_d-d-M',
+];

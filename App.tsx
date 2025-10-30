@@ -1,13 +1,12 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
-import { MENU_ITEMS, SUCCESS_MESSAGE_SUBTITLE } from './constants';
-import type { Theme, Language, AppMode, ArduinoStatus, MenuItemData, NotificationStatus } from './types';
+import { MENU_ITEMS, SUCCESS_MESSAGE_SUBTITLE, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } from './constants';
+import type { Theme, Language, ArduinoStatus, MenuItemData, NotificationStatus } from './types';
 import Header from './components/Header';
 import MainMenu from './components/MainMenu';
-import EntertainmentMode from './components/EntertainmentMode';
 import HowItWorks from './components/HowItWorks';
 import InitializingScreen from './components/InitializingScreen';
-import ConfirmationModal from './components/ConfirmationModal';
-import NotificationStatusToast from './components/WhatsAppStatusToast';
+import NotificationStatusToast from './components/NotificationStatusToast';
 
 // --- Text-to-Speech (TTS) Utility ---
 const languageToCode: Record<Language, string> = {
@@ -21,27 +20,58 @@ const speak = (text: string, language: Language, enabled: boolean): void => {
   if (!enabled || typeof window === 'undefined' || !window.speechSynthesis) {
     return;
   }
-  // Cancel any currently speaking utterance to prevent overlap
   window.speechSynthesis.cancel();
 
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = languageToCode[language] || 'en-US';
-  utterance.rate = 0.9; // Slightly slower for clarity
+  utterance.rate = 0.9;
   utterance.pitch = 1.1;
 
   window.speechSynthesis.speak(utterance);
 };
 // --- End of TTS Utility ---
 
+// --- Telegram Message Formatter ---
+const generateTelegramMessage = (item: MenuItemData, language: Language): string => {
+    const requestDetails: Record<string, { emoji: string; request: string; status: string; }> = {
+      water: { emoji: '💧', request: 'WATER', status: 'Urgent' },
+      food: { emoji: '🍽️', request: 'FOOD', status: 'Urgent' },
+      help: { emoji: '🆘', request: 'HELP', status: 'CRITICAL' },
+      washroom: { emoji: '🚻', request: 'WASHROOM', status: 'Urgent' },
+      outing: { emoji: '🚗', request: 'OUTING', status: 'Request' },
+    };
+
+    const details = requestDetails[item.id];
+    if (!details) {
+        return `Patient made an unknown request: ${item.name.english}`;
+    }
+
+    const timeInIST = new Date().toLocaleString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        hour12: true,
+        hour: '2-digit',
+        minute: '2-digit',
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    });
+    
+    const statusEmoji = details.status === 'CRITICAL' ? '🚨' : (details.status === 'Request' ? '📌' : '⚠️');
+    const languageName = language.charAt(0).toUpperCase() + language.slice(1);
+
+    return `${details.emoji} *Patient Request: ${details.request}*\n\n` +
+           `⏰ *Time:* ${timeInIST}\n` +
+           `🌐 *Language:* ${languageName}\n` +
+           `${statusEmoji} *Status:* ${details.status}`;
+};
+// --- End of Formatter ---
+
 const App: React.FC = () => {
   const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem('theme') as Theme) || 'dark');
   const [language, setLanguage] = useState<Language>(() => (localStorage.getItem('language') as Language) || 'english');
   const [arduinoStatus, setArduinoStatus] = useState<ArduinoStatus>('disconnected');
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [appMode, setAppMode] = useState<AppMode>('navigation');
   const [isInitializing, setIsInitializing] = useState(true);
-  const [itemToConfirm, setItemToConfirm] = useState<MenuItemData | null>(null);
-  const [highlightedConfirmation, setHighlightedConfirmation] = useState<'yes' | 'no'>('yes');
   const [notificationStatus, setNotificationStatus] = useState<NotificationStatus>('idle');
   const [isTtsEnabled, setIsTtsEnabled] = useState<boolean>(() => {
     const saved = localStorage.getItem('ttsEnabled');
@@ -71,72 +101,48 @@ const App: React.FC = () => {
     localStorage.setItem('language', language);
   }, [language]);
   
-  // TTS for menu navigation
   useEffect(() => {
-    if (isInitializing || itemToConfirm || appMode !== 'navigation') {
+    if (isInitializing || notificationStatus !== 'idle') {
       window.speechSynthesis?.cancel();
       return;
     }
     const currentItem = MENU_ITEMS[selectedIndex];
     speak(currentItem.name[language], language, isTtsEnabled);
-  }, [selectedIndex, language, isTtsEnabled, isInitializing, itemToConfirm, appMode]);
+  }, [selectedIndex, language, isTtsEnabled, isInitializing, notificationStatus]);
 
   const handleNavigateNext = useCallback(() => {
-    if (itemToConfirm) return;
+    if (notificationStatus !== 'idle') return;
     setSelectedIndex(prevIndex => (prevIndex + 1) % MENU_ITEMS.length);
-  }, [itemToConfirm]);
+  }, [notificationStatus]);
 
-  const handleSelect = useCallback(() => {
-    if (itemToConfirm) return;
-    const item = MENU_ITEMS[selectedIndex];
-    
-    if (item.id === 'entertainment') {
-      setAppMode('entertainment');
-    } else {
-      setItemToConfirm(item);
-      setHighlightedConfirmation('yes');
-      speak(`${item.name[language]}. Confirm selection?`, language, isTtsEnabled);
-    }
-  }, [selectedIndex, language, isTtsEnabled, itemToConfirm]);
+  const handleSelectionAndNotify = useCallback(async (item: MenuItemData) => {
+    if (notificationStatus !== 'idle') return;
 
-  const handleItemClick = useCallback((item: MenuItemData) => {
-    if (itemToConfirm || notificationStatus !== 'idle') return;
-    
-    if (item.id === 'entertainment') {
-      setAppMode('entertainment');
-    } else {
-      setItemToConfirm(item);
-      setHighlightedConfirmation('yes');
-      speak(`${item.name[language]}. Confirm selection?`, language, isTtsEnabled);
-    }
-  }, [language, isTtsEnabled, itemToConfirm, notificationStatus]);
-  
-  const handleCancel = useCallback(() => {
-    setItemToConfirm(null);
-  }, []);
-
-  const handleConfirm = useCallback(async () => {
-    if (!itemToConfirm) return;
-
-    const item = itemToConfirm;
-    setItemToConfirm(null);
-    
-    speak(`${item.name[language]}. ${SUCCESS_MESSAGE_SUBTITLE[language]}`, language, isTtsEnabled);
+    speak(`You selected ${item.name[language]}.`, language, isTtsEnabled);
     
     setNotificationStatus('sending');
     
+    const messageText = generateTelegramMessage(item, language);
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+
     try {
-      const response = await fetch('http://localhost:3001/send-telegram', {
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: `🚨 EyesTalk Alert: User requested "${item.name.english}".` }),
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CHAT_ID,
+          text: messageText,
+          parse_mode: 'Markdown'
+        }),
       });
-      if (!response.ok) throw new Error('Network response was not ok');
       
       const result = await response.json();
-      if (!result.success) throw new Error(result.error || 'API returned an error');
+      if (!response.ok || !result.ok) {
+        throw new Error(result.description || 'Failed to send message');
+      }
 
       setNotificationStatus('success');
+      speak(SUCCESS_MESSAGE_SUBTITLE[language], language, isTtsEnabled);
     } catch (error) {
       console.error("Failed to send Telegram message:", error);
       setNotificationStatus('error');
@@ -145,32 +151,33 @@ const App: React.FC = () => {
         setNotificationStatus('idle');
       }, 2500);
     }
-  }, [itemToConfirm, language, isTtsEnabled]);
+  }, [language, isTtsEnabled, notificationStatus]);
 
+  const handleSelect = useCallback(() => {
+    setSelectedIndex(currentSelectedIndex => {
+      const item = MENU_ITEMS[currentSelectedIndex];
+    
+      if (item.id === 'entertainment') {
+        speak(`Opening entertainment.`, language, isTtsEnabled);
+        const url = `https://www.youtube.com/shorts/`;
+        window.open(url, '_blank', 'noopener,noreferrer');
+      } else {
+        handleSelectionAndNotify(item);
+      }
+      return 0;
+    });
+  }, [handleSelectionAndNotify, language, isTtsEnabled]);
+  
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (notificationStatus !== 'idle') return;
 
-      if (itemToConfirm) {
-        if (event.code === 'ArrowDown') {
-          event.preventDefault();
-          setHighlightedConfirmation(prev => (prev === 'yes' ? 'no' : 'yes'));
-        } else if (event.code === 'Space') {
-          event.preventDefault();
-          if (highlightedConfirmation === 'yes') {
-            handleConfirm();
-          } else {
-            handleCancel();
-          }
-        }
-      } else if (appMode === 'navigation') {
-        if (event.code === 'ArrowDown') {
-          event.preventDefault();
-          handleNavigateNext();
-        } else if (event.code === 'Space') {
-          event.preventDefault();
-          handleSelect();
-        }
+      if (event.code === 'ArrowDown') {
+        event.preventDefault();
+        handleNavigateNext();
+      } else if (event.code === 'Space') {
+        event.preventDefault();
+        handleSelect();
       }
     };
 
@@ -178,12 +185,7 @@ const App: React.FC = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [appMode, itemToConfirm, notificationStatus, highlightedConfirmation, handleNavigateNext, handleSelect, handleConfirm, handleCancel]);
-
-  const handleExitEntertainment = () => {
-    setAppMode('navigation');
-    setSelectedIndex(0);
-  };
+  }, [notificationStatus, handleNavigateNext, handleSelect]);
 
   if (isInitializing) {
     return <InitializingScreen />;
@@ -202,26 +204,9 @@ const App: React.FC = () => {
         setIsTtsEnabled={setIsTtsEnabled}
       />
       <main className="flex-grow flex flex-col items-center justify-center p-4 md:p-8">
-        {appMode === 'navigation' ? (
-          <MainMenu 
-            selectedIndex={selectedIndex} 
-            language={language} 
-            onItemClick={handleItemClick}
-          />
-        ) : (
-          <EntertainmentMode onExit={handleExitEntertainment} />
-        )}
+        <MainMenu selectedIndex={selectedIndex} language={language} />
       </main>
-      {appMode === 'navigation' && <HowItWorks />}
-      {itemToConfirm && (
-        <ConfirmationModal
-          item={itemToConfirm}
-          language={language}
-          onConfirm={handleConfirm}
-          onCancel={handleCancel}
-          highlightedOption={highlightedConfirmation}
-        />
-      )}
+      <HowItWorks />
       <NotificationStatusToast 
         status={notificationStatus}
         language={language}

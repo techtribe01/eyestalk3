@@ -6,10 +6,9 @@ import type { Language } from '../types';
 interface MainMenuProps {
   selectedIndex: number;
   language: Language;
-  onItemClick?: (item: any) => void;
 }
 
-const MainMenu: React.FC<MainMenuProps> = ({ selectedIndex, language, onItemClick }) => {
+const MainMenu: React.FC<MainMenuProps> = ({ selectedIndex, language }) => {
   return (
     <div className="flex flex-row items-center justify-start md:justify-center gap-4 md:gap-6 p-4 w-full overflow-x-auto">
       {MENU_ITEMS.map((item, index) => (
@@ -19,7 +18,6 @@ const MainMenu: React.FC<MainMenuProps> = ({ selectedIndex, language, onItemClic
           language={language}
           isHighlighted={selectedIndex === index}
           accentColor={ACCENT_COLORS[index % ACCENT_COLORS.length]}
-          onItemClick={onItemClick}
         />
       ))}
     </div>
