@@ -81,9 +81,13 @@ async function logNotification(type, message, status, details = null) {
 
 // Send Telegram notification
 async function sendTelegramNotification(message) {
-  const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+  if (!config.telegram.enabled) {
+    throw new Error('Telegram notifications are disabled');
+  }
+
+  const url = `https://api.telegram.org/bot${config.telegram.botToken}/sendMessage`;
   const payload = {
-    chat_id: TELEGRAM_CHAT_ID,
+    chat_id: config.telegram.chatId,
     text: message,
   };
 
