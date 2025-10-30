@@ -24,9 +24,16 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, language, isHighlighted, acce
       : 'border-light-card-border dark:border-dark-card-border'}
   `;
 
+  const handleClick = () => {
+    if (onItemClick) {
+      onItemClick(item);
+    }
+  };
+
   return (
     <div
       className={cardClasses}
+      onClick={handleClick}
       style={isHighlighted ? {
         boxShadow: `0 0 20px ${accentColor}, 0 0 5px ${accentColor}`,
         borderColor: accentColor,
