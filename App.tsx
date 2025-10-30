@@ -98,6 +98,18 @@ const App: React.FC = () => {
       speak(`${item.name[language]}. Confirm selection?`, language, isTtsEnabled);
     }
   }, [selectedIndex, language, isTtsEnabled, itemToConfirm]);
+
+  const handleItemClick = useCallback((item: MenuItemData) => {
+    if (itemToConfirm || notificationStatus !== 'idle') return;
+    
+    if (item.id === 'entertainment') {
+      setAppMode('entertainment');
+    } else {
+      setItemToConfirm(item);
+      setHighlightedConfirmation('yes');
+      speak(`${item.name[language]}. Confirm selection?`, language, isTtsEnabled);
+    }
+  }, [language, isTtsEnabled, itemToConfirm, notificationStatus]);
   
   const handleCancel = useCallback(() => {
     setItemToConfirm(null);
