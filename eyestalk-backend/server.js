@@ -115,12 +115,16 @@ async function sendTelegramNotification(message) {
 
 // Send Email notification
 async function sendEmailNotification(message) {
+  if (!config.email.enabled || !nodemailer) {
+    throw new Error('Email notifications are disabled or nodemailer not available');
+  }
+
   try {
-    const transporter = nodemailer.createTransport(EMAIL_CONFIG);
+    const transporter = nodemailer.createTransport(config.email);
     
     const mailOptions = {
-      from: EMAIL_CONFIG.auth.user,
-      to: NOTIFICATION_RECIPIENTS.email,
+      from: config.email.auth.user,
+      to: config.email.recipient,
       subject: '🚨 EyesTalk Alert - Assistance Required',
       html: `
         <h2>🚨 EyesTalk Notification</h2>
