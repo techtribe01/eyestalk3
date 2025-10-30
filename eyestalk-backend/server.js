@@ -119,7 +119,7 @@ async function sendTelegramNotification(message) {
 // Send Email notification
 async function sendEmailNotification(message) {
   try {
-    const transporter = nodemailer.createTransporter(EMAIL_CONFIG);
+    const transporter = nodemailer.createTransport(EMAIL_CONFIG);
     
     const mailOptions = {
       from: EMAIL_CONFIG.auth.user,
