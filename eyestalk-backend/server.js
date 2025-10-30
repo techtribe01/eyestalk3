@@ -171,7 +171,7 @@ async function sendWhatsAppNotification(message) {
     // For now, we'll simulate success and log it
     const whatsappMessage = `🚨 *EyesTalk Alert*\n\n${message}\n\nTime: ${new Date().toLocaleString()}\n\n_Please respond promptly._`;
     
-    await logNotification('whatsapp', whatsappMessage, 'simulated', { phone: NOTIFICATION_RECIPIENTS.phone });
+    await logNotification('whatsapp', whatsappMessage, 'simulated', { phone: config.whatsapp.toNumber });
     console.log('📱 WhatsApp notification simulated:', whatsappMessage);
     
     return { success: true, method: 'whatsapp', data: { simulated: true, message: whatsappMessage } };
