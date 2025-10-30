@@ -203,7 +203,11 @@ const App: React.FC = () => {
       />
       <main className="flex-grow flex flex-col items-center justify-center p-4 md:p-8">
         {appMode === 'navigation' ? (
-          <MainMenu selectedIndex={selectedIndex} language={language} />
+          <MainMenu 
+            selectedIndex={selectedIndex} 
+            language={language} 
+            onItemClick={handleItemClick}
+          />
         ) : (
           <EntertainmentMode onExit={handleExitEntertainment} />
         )}
