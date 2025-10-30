@@ -9,7 +9,7 @@ interface MenuItemProps {
   onItemClick?: (item: MenuItemData) => void;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ item, language, isHighlighted, accentColor }) => {
+const MenuItem: React.FC<MenuItemProps> = ({ item, language, isHighlighted, accentColor, onItemClick }) => {
   const Icon = item.icon;
 
   const cardClasses = `
