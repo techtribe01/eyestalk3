@@ -183,7 +183,7 @@ async function sendWhatsAppNotification(message) {
 
 // Main notification endpoint - tries multiple methods
 app.post('/send-notification', async (req, res) => {
-  const { message, methods = ['telegram', 'email', 'browser', 'whatsapp'] } = req.body;
+  const { message, methods = config.defaultMethods } = req.body;
 
   if (!message) {
     return res.status(400).json({ success: false, error: 'Message is required' });
