@@ -19,6 +19,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ selectedIndex, language, onItemClic
           language={language}
           isHighlighted={selectedIndex === index}
           accentColor={ACCENT_COLORS[index % ACCENT_COLORS.length]}
+          onItemClick={onItemClick}
         />
       ))}
     </div>
