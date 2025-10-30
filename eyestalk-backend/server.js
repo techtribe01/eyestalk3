@@ -6,8 +6,8 @@ const app = express();
 const port = 3001;
 
 // --- CONFIGURATION ---
-const TELEGRAM_BOT_TOKEN = '8203231943:AAH30uPbdMhV0gd1yQvbLv-796mcD7Hz1ZQ';
-const TELEGRAM_CHAT_ID = '964973920';
+const TELEGRAM_BOT_TOKEN = '8483266791:AAHrlKQxmWrBxgcHfAC4ZN_nK4l95bP_Sbg';
+const TELEGRAM_CHAT_ID = '287541730';
 // ---------------------
 
 // More robust CORS setup to allow requests from any origin
