@@ -68,5 +68,87 @@
         }
       }
     ]
+  },
+  {
+    "timestamp": "2025-10-30T00:13:22.568Z",
+    "type": "browser",
+    "message": "🚨 EyesTalk Alert: User requested \"Help\"\n\nTime: 10/30/2025, 12:13:22 AM\nDevice: EyesTalk Communication System\n\nPlease respond promptly to assist the user.",
+    "status": "success",
+    "details": {
+      "id": 1761783202568,
+      "message": "🚨 EyesTalk Alert: User requested \"Help\"\n\nTime: 10/30/2025, 12:13:22 AM\nDevice: EyesTalk Communication System\n\nPlease respond promptly to assist the user.",
+      "timestamp": "2025-10-30T00:13:22.568Z",
+      "read": false
+    }
+  },
+  {
+    "timestamp": "2025-10-30T00:13:23.585Z",
+    "type": "telegram",
+    "message": "🚨 EyesTalk Alert: User requested \"Help\"\n\nTime: 10/30/2025, 12:13:22 AM\nDevice: EyesTalk Communication System\n\nPlease respond promptly to assist the user.",
+    "status": "failed",
+    "details": {
+      "ok": false,
+      "error_code": 400,
+      "description": "Bad Request: chat not found"
+    }
+  },
+  {
+    "timestamp": "2025-10-30T00:13:23.586Z",
+    "type": "telegram",
+    "message": "🚨 EyesTalk Alert: User requested \"Help\"\n\nTime: 10/30/2025, 12:13:22 AM\nDevice: EyesTalk Communication System\n\nPlease respond promptly to assist the user.",
+    "status": "error",
+    "details": "Telegram API error: Bad Request: chat not found"
+  },
+  {
+    "timestamp": "2025-10-30T00:13:23.587Z",
+    "type": "email",
+    "message": "🚨 EyesTalk Alert: User requested \"Help\"\n\nTime: 10/30/2025, 12:13:22 AM\nDevice: EyesTalk Communication System\n\nPlease respond promptly to assist the user.",
+    "status": "error",
+    "details": "nodemailer.createTransporter is not a function"
+  },
+  {
+    "timestamp": "2025-10-30T00:13:23.588Z",
+    "type": "whatsapp",
+    "message": "🚨 *EyesTalk Alert*\n\n🚨 EyesTalk Alert: User requested \"Help\"\n\nTime: 10/30/2025, 12:13:22 AM\nDevice: EyesTalk Communication System\n\nPlease respond promptly to assist the user.\n\nTime: 10/30/2025, 12:13:23 AM\n\n_Please respond promptly._",
+    "status": "simulated",
+    "details": {
+      "phone": "+1234567890"
+    }
+  },
+  {
+    "timestamp": "2025-10-30T00:13:23.589Z",
+    "type": "system",
+    "message": "🚨 EyesTalk Alert: User requested \"Help\"\n\nTime: 10/30/2025, 12:13:22 AM\nDevice: EyesTalk Communication System\n\nPlease respond promptly to assist the user.",
+    "status": "delivered",
+    "details": [
+      {
+        "success": true,
+        "method": "browser",
+        "data": {
+          "id": 1761783202568,
+          "message": "🚨 EyesTalk Alert: User requested \"Help\"\n\nTime: 10/30/2025, 12:13:22 AM\nDevice: EyesTalk Communication System\n\nPlease respond promptly to assist the user.",
+          "timestamp": "2025-10-30T00:13:22.568Z",
+          "read": false
+        }
+      },
+      {
+        "success": false,
+        "method": "telegram",
+        "error": "Telegram API error: Bad Request: chat not found"
+      },
+      {
+        "success": false,
+        "method": "email",
+        "error": "nodemailer.createTransporter is not a function"
+      },
+      {
+        "success": true,
+        "method": "whatsapp",
+        "data": {
+          "simulated": true,
+          "message": "🚨 *EyesTalk Alert*\n\n🚨 EyesTalk Alert: User requested \"Help\"\n\nTime: 10/30/2025, 12:13:22 AM\nDevice: EyesTalk Communication System\n\nPlease respond promptly to assist the user.\n\nTime: 10/30/2025, 12:13:23 AM\n\n_Please respond promptly._"
+        }
+      }
+    ]
   }
 ]
