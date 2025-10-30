@@ -6,6 +6,7 @@ import type { Language } from '../types';
 interface MainMenuProps {
   selectedIndex: number;
   language: Language;
+  onItemClick?: (item: any) => void;
 }
 
 const MainMenu: React.FC<MainMenuProps> = ({ selectedIndex, language }) => {
